@@ -1,12 +1,3 @@
-# =============================================================================
-# app.py
-# Web app interativa para previsão de peso de peixes em piscicultura.
-# Desenvolvida com Streamlit — permite demo ao cliente em tempo real.
-#
-# Para correr:
-#   streamlit run app.py
-# =============================================================================
-
 import streamlit as st      # framework para construir a web app
 import joblib               # carregar o modelo treinado (.pkl)
 import numpy as np          # operações numéricas
