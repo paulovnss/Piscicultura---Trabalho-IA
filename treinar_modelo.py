@@ -1,31 +1,16 @@
-# =============================================================================
-# treinar_modelo.py
-# Treina um modelo de regressão (Random Forest) para prever o peso de peixes
-# com base em parâmetros do tanque de piscicultura.
-# =============================================================================
-
-# --- Importações ---
-import pandas as pd                                    # manipulação de tabelas (DataFrames)
+import pandas as pd                                    # manipulação de tabelas
 import numpy as np                                     # operações numéricas
 import matplotlib.pyplot as plt                        # criação de gráficos
 import matplotlib.gridspec as gridspec                 # layout de múltiplos gráficos
-from sklearn.ensemble import RandomForestRegressor     # algoritmo de ML: Random Forest
+from sklearn.ensemble import RandomForestRegressor     # Random Forest (ML) - Regressão
 from sklearn.model_selection import train_test_split   # dividir dados em treino e teste
 from sklearn.metrics import r2_score, mean_absolute_error  # métricas de avaliação
 import joblib                                          # guardar/carregar o modelo treinado
 
-
-# =============================================================================
-# 1. CARREGAR OS DADOS
-# =============================================================================
-
 # Lê o CSV gerado pelo gerar_dados.py — tabela com 1000 linhas e 7 colunas
-df = pd.read_csv("/home/claude/dados_piscicultura.csv")
+df = pd.read_csv("/home/paulo-victor/projects/piscicultura/dados_piscicultura.csv")
 
-
-# =============================================================================
 # 2. SEPARAR FEATURES (X) DO TARGET (y)
-# =============================================================================
 
 # Lista com os nomes das colunas que o modelo vai usar como entrada
 FEATURES = [
@@ -46,35 +31,21 @@ X = df[FEATURES]
 y = df[TARGET]
 
 
-# =============================================================================
-# 3. DIVIDIR EM TREINO E TESTE
-# =============================================================================
+# DIVIDIR EM TREINO E TESTE
 
 # Divide os dados em dois grupos:
 #   - X_train, y_train: 800 registos (80%) — usados para o modelo aprender
 #   - X_test,  y_test:  200 registos (20%) — usados para avaliar o modelo
-#
-# IMPORTANTE: o modelo NUNCA vê os dados de teste durante o treino.
-# Avaliar com dados que o modelo já viu seria como dar a resposta antes do exame.
-#
 # test_size=0.2  → 20% dos dados vão para teste
 # random_state=42 → garante que a divisão é sempre igual (reproducibilidade)
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42
 )
 
-
-# =============================================================================
-# 4. CRIAR E TREINAR O MODELO
-# =============================================================================
+# Cria e treina o modelo de Random Forest Regressor
 
 # Random Forest Regressor: constrói N árvores de decisão independentes.
-# Cada árvore aprende regras do tipo:
-#   "SE dias_criacao > 200 E racao > 50 → peso ≈ 350g"
-# A previsão final é a MÉDIA das previsões de todas as árvores.
-# Isto torna o modelo robusto — erros individuais de cada árvore cancelam-se.
-#
-# n_estimators=200 → número de árvores (mais árvores = mais preciso mas mais lento)
+# n_estimators=200 → número de árvores (mais árvores = mais preciso, mais lento)
 # random_state=42  → reproducibilidade do treino
 # n_jobs=-1        → usa todos os núcleos do CPU para treinar em paralelo
 modelo = RandomForestRegressor(n_estimators=200, random_state=42, n_jobs=-1)
@@ -82,22 +53,15 @@ modelo = RandomForestRegressor(n_estimators=200, random_state=42, n_jobs=-1)
 # .fit() é onde acontece o treino — o modelo aprende os padrões dos dados
 modelo.fit(X_train, y_train)
 
-
-# =============================================================================
-# 5. FAZER PREVISÕES E AVALIAR O MODELO
-# =============================================================================
-
-# O modelo prevê o peso para os 200 registos de teste (que nunca viu)
+# FAZER PREVISÕES E AVALIAR O MODELO
+# O modelo prevê o peso para os 200 registos de teste
 y_pred = modelo.predict(X_test)
 
 # R² (coeficiente de determinação):
-#   - Varia entre 0 e 1. Quanto mais próximo de 1, melhor.
-#   - 0.88 significa que o modelo explica 88% da variação do peso.
+#   - Varia entre 0 e 1. Quanto mais próximo de 1, melhor = 0.88 significa que o modelo explica 88% da variação do peso.
 r2 = r2_score(y_test, y_pred)
 
-# MAE (Mean Absolute Error — Erro Absoluto Médio):
-#   - Média das diferenças absolutas entre o peso real e o previsto.
-#   - 22.9g significa que o modelo erra em média 23 gramas.
+# - 22.9g significa que o modelo erra em média 23 gramas (MAE = Mean Absolute Error)
 mae = mean_absolute_error(y_test, y_pred)
 
 # Imprimir resultados no terminal
@@ -108,11 +72,9 @@ print(f"Amostras teste  : {len(X_test)}")
 
 # GUARDAR O MODELO TREINADO
 
-# joblib.dump() serializa o modelo num ficheiro binário (.pkl = pickle).
-# A web app (app.py) vai carregar este ficheiro com joblib.load()
-# para fazer previsões sem precisar de treinar de novo.
-# É como guardar o estado de um jogo — não recomeças do zero.
-joblib.dump(modelo, "/home/claude/modelo.pkl")
+# joblib.dump() serializa o modelo num ficheiro binário (.pkl).
+# app.py vai carregar este ficheiro com joblib.load()
+joblib.dump(modelo, "/home/paulo-victor/projects/piscicultura/modelo.pkl")
 print("Modelo guardado em modelo.pkl")
 
 # GRÁFICOS DE AVALIAÇÃO
@@ -120,14 +82,13 @@ print("Modelo guardado em modelo.pkl")
 fig = plt.figure(figsize=(13, 5))
 fig.patch.set_facecolor('#F8F7F4')
 
-# GridSpec permite definir um layout de subgráficos com controlo preciso do espaço
+# GridSpec permite definir um layout de subgráficos com controle preciso do espaço
 gs = gridspec.GridSpec(1, 2, figure=fig, wspace=0.38)
 
 
 # --- Gráfico 1: Real vs Previsto ---
 # Cada ponto = um peixe do conjunto de teste.
 # Eixo X = peso real | Eixo Y = peso que o modelo previu.
-# Se o modelo fosse perfeito, todos os pontos estariam na linha diagonal vermelha.
 ax1 = fig.add_subplot(gs[0])
 ax1.scatter(y_test, y_pred, alpha=0.35, s=18, color="#534AB7")
 
@@ -174,6 +135,6 @@ fig.suptitle("Avaliação do modelo — Random Forest Regressor",
              fontsize=12, fontweight='bold', y=1.02)
 
 # Guardar o gráfico como imagem PNG
-plt.savefig("/home/claude/avaliacao_modelo.png", dpi=150,
+plt.savefig("/home/paulo-victor/projects/piscicultura/avaliacao_modelo.png", dpi=150,
             bbox_inches='tight', facecolor=fig.get_facecolor())
 print("Gráfico de avaliação guardado.")

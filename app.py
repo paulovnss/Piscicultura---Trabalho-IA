@@ -15,7 +15,6 @@ st.set_page_config(
 
 
 # CSS (StreamLit custom styling)
-
 # st.markdown() com unsafe_allow_html=True para isso.
 st.markdown("""
 <style>
@@ -125,18 +124,16 @@ section[data-testid="stSidebar"] span { color: #a8c8e8 !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# 3. CARREGAR O MODELO TREINADO
+# CARREGAR O MODELO TREINADO
 
-# @st.cache_resource: guarda o modelo em memória após o primeiro carregamento.
-# Sem isto, o Streamlit recarregaria o modelo a cada interação do utilizador,
-# tornando a app muito lenta.
+# @st.cache_resource: guarda o modelo em memória após o primeiro carregamento (menos lento)
 @st.cache_resource
 def load_model():
     return joblib.load("modelo.pkl")
 
 modelo = load_model()
 
-# 4. SIDEBAR — SLIDERS DE INPUT
+# SIDEBAR — SLIDERS DE INPUT
 
 # ajuste dos 6 parâmetros do tanque
 # Cada vez que um slider é movido, o Streamlit re-executa o script inteiro
