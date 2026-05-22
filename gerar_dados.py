@@ -1,5 +1,7 @@
 import numpy as np #  gera números aleatórios e faz os cálculos matemáticos
 import pandas as pd # organizar os dados numa tabela e guarda o CSV
+from pathlib import Path
+BASE = Path(__file__).parent
 
 np.random.seed(42) # números aleatórios gerados são os mesmos toda vez que rodar o código, para garantir reprodutibilidade
 N = 1000
@@ -41,6 +43,6 @@ df = pd.DataFrame({ # Junta tudo numa tabela com colunas nomeadas e guarda em CS
     "peso_g":                  np.round(peso, 1),
 })
 
-df.to_csv("/home/paulo-victor/projects/piscicultura/dados_piscicultura.csv", index=False)
+df.to_csv(BASE / "dados_piscicultura.csv", index=False)
 print("Dataset gerado com sucesso!")
 print(df.describe().round(2).to_string())

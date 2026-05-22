@@ -6,9 +6,11 @@ from sklearn.ensemble import RandomForestRegressor     # Random Forest (ML) - Re
 from sklearn.model_selection import train_test_split   # dividir dados em treino e teste
 from sklearn.metrics import r2_score, mean_absolute_error  # métricas de avaliação
 import joblib                                          # guardar/carregar o modelo treinado
+from pathlib import Path
+BASE = Path(__file__).parent
 
 # Lê o CSV gerado pelo gerar_dados.py — tabela com 1000 linhas e 7 colunas
-df = pd.read_csv("/home/paulo-victor/projects/piscicultura/dados_piscicultura.csv")
+df = pd.read_csv(BASE / "dados_piscicultura.csv")
 
 # 2. SEPARAR FEATURES (X) DO TARGET (y)
 
@@ -74,7 +76,7 @@ print(f"Amostras teste  : {len(X_test)}")
 
 # joblib.dump() serializa o modelo num ficheiro binário (.pkl).
 # app.py vai carregar este ficheiro com joblib.load()
-joblib.dump(modelo, "/home/paulo-victor/projects/piscicultura/modelo.pkl")
+joblib.dump(modelo, BASE / "modelo.pkl")
 print("Modelo guardado em modelo.pkl")
 
 # GRÁFICOS DE AVALIAÇÃO
@@ -135,6 +137,6 @@ fig.suptitle("Avaliação do modelo — Random Forest Regressor",
              fontsize=12, fontweight='bold', y=1.02)
 
 # Guardar o gráfico como imagem PNG
-plt.savefig("/home/paulo-victor/projects/piscicultura/avaliacao_modelo.png", dpi=150,
+plt.savefig(BASE / "avaliacao_modelo.png", dpi=150,
             bbox_inches='tight', facecolor=fig.get_facecolor())
 print("Gráfico de avaliação guardado.")
