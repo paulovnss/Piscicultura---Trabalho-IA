@@ -13,24 +13,24 @@ N = 1000
 temperatura    = np.random.uniform(18, 30, N)        # °C  (ótimo ~24°C)
 oxigenio       = np.random.uniform(5, 10, N)         # mg/L
 racao_diaria   = np.random.uniform(10, 80, N)        # g/dia
-dias_criacao   = np.random.randint(30, 365, N)       # dias desde o início do lote
+dias_criacao = np.random.randint(30, 731, N)      # dias desde o início do lote
 densidade      = np.random.uniform(5, 40, N)         # peixes/m³
 ph             = np.random.uniform(6.5, 8.5, N)      # pH
 
 # --- Peso (target) com relações biológicas realistas ---
 # Efeito principal: dias de criação + ração
 peso = (
-    0.8  * dias_criacao              # crescimento diário base
-  + 1.2  * racao_diaria              # mais ração → mais peso
+    1.6  * dias_criacao              # crescimento diário base
+  + 2.0  * racao_diaria              # mais ração → mais peso
   - 4.5  * np.abs(temperatura - 24)  # penalização por afastamento do ótimo
-  + 8.0  * oxigenio                  # mais O2 → metabolismo melhor
-  - 3.0  * densidade                 # mais peixe/m3 → competição por recursos
-  - 20.0 * np.abs(ph - 7.2)         # penalização por pH fora do ótimo
-  + np.random.normal(0, 25, N)      # ruído realista
+  + 10.0  * oxigenio                  # mais O2 → metabolismo melhor
+  - 2.0  * densidade                 # mais peixe/m3 → competição por recursos
+  - 18.0 * np.abs(ph - 7.2)         # penalização por pH fora do ótimo
+  + np.random.normal(0, 30, N)      # ruído realista
 )
 
 # Garantir que o peso mínimo é positivo (peixe pequeno ao início)
-peso = np.clip(peso, 50, 1800)
+peso = np.clip(peso, 50, 1500)
 
 # --- DataFrame ---
 df = pd.DataFrame({ # Junta tudo numa tabela com colunas nomeadas e guarda em CSV

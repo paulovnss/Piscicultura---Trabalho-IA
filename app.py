@@ -179,9 +179,37 @@ peso_previsto = modelo.predict(X_input)[0]
 peso_kg = peso_previsto / 1000
 
 # Taxa de crescimento e dias para atingir a META
-crescimento_dia = peso_previsto / dias if dias > 0 else 0
-dias_para_meta  = max(0, int((meta_peso - peso_previsto) / max(crescimento_dia, 0.1)))
 ja_atingiu_meta = peso_previsto >= meta_peso
+
+dias_para_meta = None
+dia_meta = None
+
+for d in range(dias, 731, 5):
+
+    x = np.array([[
+        temperatura,
+        oxigenio,
+        racao,
+        d,
+        densidade,
+        ph
+    ]])
+
+    peso_futuro = modelo.predict(x)[0]
+
+    if peso_futuro >= meta_peso:
+        dia_meta = d
+        dias_para_meta = d - dias
+        break
+
+
+if dias_para_meta is None:
+    dias_para_meta = "N/A"
+    dia_meta = None
+
+
+# Mantém apenas para exibição
+crescimento_dia = peso_previsto / max(dias, 1)
 
 
 # FUNÇÕES DE ESTADO DO TANQUE
@@ -236,7 +264,12 @@ with col3:
 
 with col4:
     # Agora usa a meta definida pelo utilizador
-    label_meta = "Atingida! ✓" if ja_atingiu_meta else f"{dias_para_meta}d"
+    if ja_atingiu_meta:
+        label_meta = "Atingida ✓"
+    elif dias_para_meta == "N/A":
+        label_meta = "--"
+    else:
+        label_meta = f"{dias_para_meta}d"
     cor_meta   = '#4ade80' if ja_atingiu_meta else '#fbbf24'
     st.markdown(f"""
     <div class="metric-card">
@@ -328,6 +361,19 @@ with col_dir:
 
     progresso = min(100, int((peso_previsto / meta_peso) * 100))
 
+    if ja_atingiu_meta:
+        texto_meta = f"Meta de {meta_peso}g já atingida."
+    elif dia_meta is not None:
+        texto_meta = (
+            f"Meta prevista para o dia "
+            f"{dia_meta} ({dias_para_meta} dias restantes)."
+        )
+    else:
+        texto_meta = (
+            f"Meta de {meta_peso}g não é atingida "
+            f"até ao dia 730."
+        )
+
     st.markdown(f"""
     <div class="prediction-box">
         <div class="prediction-main" style="color:{cor_peso}">{peso_previsto:.0f} g</div>
@@ -336,7 +382,9 @@ with col_dir:
         <div style='background:#0a1628; border-radius:8px; overflow:hidden; height:8px; margin-bottom:8px;'>
             <div style='background:{cor_peso}; width:{progresso}%; height:100%; border-radius:8px; transition:width 0.3s;'></div>
         </div>
-        <div style='font-size:0.8rem; color:#5a8a6a;'>{progresso}% da meta ({meta_peso}g)</div>
+        <div style='font-size:0.8rem; color:#5a8a6a;'>
+        {progresso}% da meta ({meta_peso}g)
+        </div>
         <br>
         <div style='font-size:0.75rem; color:#3a6a8a;'>
             Margem de erro: ± 23g &nbsp;|&nbsp; R² = 0.88
@@ -344,6 +392,11 @@ with col_dir:
     </div>
     """, unsafe_allow_html=True)
 
+    st.markdown(f"""
+    <div class="info-box">
+    🎯 {texto_meta}
+    </div>
+    """, unsafe_allow_html=True)
 st.markdown("<br>", unsafe_allow_html=True)
 
 
