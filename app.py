@@ -405,12 +405,12 @@ st.markdown('<div class="section-title">🧠 O que o modelo valoriza</div>',
             unsafe_allow_html=True)
 
 importancias = {
-    "Dias de criação":  0.612,
-    "Ração diária":     0.198,
-    "Densidade tanque": 0.071,
-    "Oxigénio":         0.058,
-    "Temperatura":      0.038,
-    "pH":               0.023,
+    "Dias de criação":  0.824,
+    "Ração diária":     0.116,
+    "Densidade tanque": 0.022,
+    "Oxigénio":         0.020,
+    "Temperatura":      0.010,
+    "pH":               0.009,
 }
 
 fig2, ax2 = plt.subplots(figsize=(10, 2.2))

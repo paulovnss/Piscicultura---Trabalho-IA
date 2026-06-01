@@ -71,6 +71,7 @@ print(f"R²  : {r2:.4f}")
 print(f"MAE : {mae:.2f} g")
 print(f"Amostras treino : {len(X_train)}")
 print(f"Amostras teste  : {len(X_test)}")
+print(df["peso_g"].describe())
 
 # GUARDAR O MODELO TREINADO
 

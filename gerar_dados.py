@@ -18,15 +18,16 @@ densidade      = np.random.uniform(5, 40, N)         # peixes/m³
 ph             = np.random.uniform(6.5, 8.5, N)      # pH
 
 # --- Peso (target) com relações biológicas realistas ---
-# Efeito principal: dias de criação + ração
+peso_base = 900 * (1 - np.exp(-dias_criacao / 180)) # Crescimento sigmoidal típico: rápido no início, depois desacelera e estabiliza perto de 900g (tamanho médio de tilápia adulta)
+
 peso = (
-    0.8  * dias_criacao              # crescimento diário base
-  + 1.2  * racao_diaria              # mais ração → mais peso
-  - 4.5  * np.abs(temperatura - 24)  # penalização por afastamento do ótimo
-  + 8.0  * oxigenio                  # mais O2 → metabolismo melhor
-  - 3.0  * densidade                 # mais peixe/m3 → competição por recursos
-  - 20.0 * np.abs(ph - 7.2)         # penalização por pH fora do ótimo
-  + np.random.normal(0, 30, N)      # ruído realista
+    peso_base
+    + 3.5 * racao_diaria
+    + 18.0 * (oxigenio - 7)
+    - 3.0 * densidade
+    - 12.0 * np.abs(temperatura - 24)
+    - 35.0 * np.abs(ph - 7.2)
+    + np.random.normal(0, 35, N)
 )
 
 # Garantir que o peso mínimo é positivo (peixe pequeno ao início)
