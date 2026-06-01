@@ -20,12 +20,12 @@ ph             = np.random.uniform(6.5, 8.5, N)      # pH
 # --- Peso (target) com relações biológicas realistas ---
 # Efeito principal: dias de criação + ração
 peso = (
-    1.6  * dias_criacao              # crescimento diário base
-  + 2.0  * racao_diaria              # mais ração → mais peso
+    0.8  * dias_criacao              # crescimento diário base
+  + 1.2  * racao_diaria              # mais ração → mais peso
   - 4.5  * np.abs(temperatura - 24)  # penalização por afastamento do ótimo
-  + 10.0  * oxigenio                  # mais O2 → metabolismo melhor
-  - 2.0  * densidade                 # mais peixe/m3 → competição por recursos
-  - 18.0 * np.abs(ph - 7.2)         # penalização por pH fora do ótimo
+  + 8.0  * oxigenio                  # mais O2 → metabolismo melhor
+  - 3.0  * densidade                 # mais peixe/m3 → competição por recursos
+  - 20.0 * np.abs(ph - 7.2)         # penalização por pH fora do ótimo
   + np.random.normal(0, 30, N)      # ruído realista
 )
 
